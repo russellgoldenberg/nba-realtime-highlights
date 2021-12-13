@@ -30,6 +30,8 @@ const template = fs.readFileSync("./template.html", "utf8");
 		return str.replace(".com/", ".com/e/");
 	};
 
+	const version = Date.now();
+
 	const highlights = streamable.map(({ title, href, datetime, ago }) =>
 		`<div class="highlight">
 			<h2 class="title">${title}</h2>
@@ -40,7 +42,7 @@ const template = fs.readFileSync("./template.html", "utf8");
   	</div>`
 	).join("");
 
-	const html = template.replace("<!-- highlights -->", highlights);
+	const html = template.replace("tk-version", version).replace("<!-- highlights -->", highlights);
 	fs.writeFileSync("./index.html", html);
 
 	// fs.writeFileSync("./data.txt", html);
