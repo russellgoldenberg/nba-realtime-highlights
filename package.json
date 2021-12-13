@@ -2,15 +2,15 @@
 	"name": "svelte-starter",
 	"version": "3.0.0",
 	"scripts": {
-		"fetch": "node fetch.js"
+		"main": "node index.js"
 	},
 	"devDependencies": {
+		"aws-sdk": "^2.1046.0",
 		"cheerio": "^1.0.0-rc.10",
-		"node-fetch": "^3.1.0"
+		"node-fetch": "^2.6.6"
 	},
-	"type": "module",
 	"engines": {
-		"node": ">= 16.13.0"
+		"node": ">= 14.0.0"
 	},
 	"browserslist": "> 0.5%, last 4 versions, not ie <= 11, not ie_mob <= 11",
 	"svelteStarter": {

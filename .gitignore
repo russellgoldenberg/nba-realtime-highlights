@@ -1,6 +1,3 @@
 .DS_Store
 node_modules
-.svelte
-.svelte-kit
-build
-functions
+upload.zip
