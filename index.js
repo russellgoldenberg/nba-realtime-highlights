@@ -37,6 +37,14 @@ const makeSrc = str => {
 	return str.replace(".com/", ".com/e/");
 };
 
+const getAgo = (t) => {
+	const diff = Date.now() - t;
+	const minutes = Math.floor(diff / 60000);
+	if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+	else if (minutes < (24 * 60)) return `${minutes / 60} hour${minutes / 60 === 1 ? "" : "s"} ago`;
+	return `${minutes / (24 * 60)} day${minutes / (24 * 60) === 1 ? "" : "s"} ago`;
+};
+
 const init = async () => {
 	const response = await fetch("https://old.reddit.com/r/nba/new");
 	const body = await response.text();
@@ -50,11 +58,9 @@ const init = async () => {
 		const time = $(el).find(".tagline time");
 		const datetime = $(time).attr("datetime");
 		const timestamp = (new Date(datetime)).getTime();
-		const ago = $(time).text();
-
 		const comments = $(el).find("a.comments").attr("href");
 
-		results.push(({ title, href, timestamp, ago, comments }));
+		results.push(({ title, href, timestamp, comments }));
 	});
 
 	const newData = results
@@ -65,7 +71,11 @@ const init = async () => {
 	const old = await download();
 	const joined = newData.concat(old.data);
 	joined.sort((a, b) => b.timestamp - a.timestamp);
-	const data = joined.slice(0, MAX);
+	const sliced = joined.slice(0, MAX);
+	const data = sliced.map(d => ({
+		...d,
+		ago: getAgo(d.timestamp)
+	}));
 
 	await upload({ timestamp, data });
 
