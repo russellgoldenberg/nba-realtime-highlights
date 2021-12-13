@@ -148,22 +148,27 @@
 		(() => {
 			const RESET = 30;
 			let timer = RESET;
+			let prevTimestamp;
 
 			const refresh = async () => {
 				const response = await fetch(`https://pudding.cool/misc/nba-highlight-hub/data.json?version=${Date.now()}`);
 				const json = await response.json();
 				
-				const highlights = json.data.map(({ title, href, datetime, ago }) =>
-					`<div class="highlight">
-						<h2 class="title">${title}</h2>
-						<p data-datetime="${datetime}" class="ago">${ago}</p>
-						<div style="width:100%;height:0px;position:relative;padding-bottom:56.25%;">
-						<iframe src="${makeSrc(href)}?autoplay=1&nocontrols=0&muted=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
-						</div>
-					</div>`
-				).join("");
+				if (json.timestamp !== prevTimestamp) {		
+					prevTimestamp = json.timestamp;		
+					const highlights = json.data.map(({ title, href, datetime, ago }) =>
+						`<div class="highlight">
+							<h2 class="title">${title}</h2>
+							<p data-datetime="${datetime}" class="ago">${ago}</p>
+							<div style="width:100%;height:0px;position:relative;padding-bottom:56.25%;">
+							<iframe src="${makeSrc(href)}?autoplay=1&nocontrols=0&muted=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
+							</div>
+						</div>`
+					).join("");
 
-				document.querySelector(".highlights").innerHTML = highlights;
+					document.querySelector(".highlights").innerHTML = highlights;
+				}
+
 				timer = RESET;
 			};
 
