@@ -6,7 +6,7 @@ const MAX = 6;
 const template = fs.readFileSync("./template.html", "utf8");
 
 (async () => {
-	const response = await fetch("https://old.reddit.com/r/nba/");
+	const response = await fetch("https://old.reddit.com/r/nba/new");
 	const body = await response.text();
 	const $ = cheerio.load(body);
 	const results = [];
