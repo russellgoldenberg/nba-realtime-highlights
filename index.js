@@ -1,15 +1,29 @@
-const fs = require("fs");
 const fetch = require("node-fetch");
 const cheerio = require("cheerio");
 const aws = require("aws-sdk");
 
+const MAX = 6;
 const s3 = new aws.S3();
-const template = fs.readFileSync("./template.html", "utf8");
+const Bucket = "pudding.cool";
+const Key = `misc/nba-highlight-hub/data.json`;
+
+const download = () => {
+	return new Promise((resolve, reject) => {
+		const params = { Bucket, Key };
+		s3.getObject(params, (err, response) => {
+			if (err) reject(err);
+			else if (response) {
+				const buffer = response.Body;
+				const str = buffer.toString("utf8");
+				const data = JSON.parse(str);
+				resolve(data);
+			} else reject("no response");
+		});
+	});
+};
 
 const upload = (data) => {
 	return new Promise((resolve, reject) => {
-		const Bucket = "pudding.cool";
-		const Key = `misc/nba-highlight-hub/data.json`;
 		const Body = JSON.stringify(data);
 		const params = { Bucket, Key, Body };
 		s3.putObject(params, (err, response) => {
@@ -35,35 +49,27 @@ const init = async () => {
 
 		const time = $(el).find(".tagline time");
 		const datetime = $(time).attr("datetime");
+		const timestamp = (new Date(datetime)).getTime();
 		const ago = $(time).text();
 
 		const comments = $(el).find("a.comments").attr("href");
 
-		results.push(({ title, href, datetime, ago, comments }));
+		results.push(({ title, href, timestamp, ago, comments }));
 	});
 
-	const data = results
+	const newData = results
 		.filter(d => d.title.startsWith("[Highlight]") && d.href.includes("streamable.com"));
 
 	const timestamp = Date.now();
 
+	const old = await download();
+	const joined = newData.concat(old.data);
+	joined.sort((a, b) => b.timestamp - a.timestamp);
+	const data = joined.slice(0, MAX);
+
 	await upload({ timestamp, data });
 
 	return;
-	// const highlights = streamable.map(({ title, href, datetime, ago }) =>
-	// 	`<div class="highlight">
-	// 		<h2 class="title">${title}</h2>
-	// 		<p data-datetime="${datetime}" class="ago">${ago}</p>
-	// 		<div style="width:100%;height:0px;position:relative;padding-bottom:56.25%;">
-	// 		<iframe src="${makeSrc(href)}?autoplay=1&nocontrols=0&muted=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
-	// 		</div>
-	// 	</div>`
-	// ).join("");
-
-	// const html = template.replace("tk-version", version).replace("<!-- highlights -->", highlights);
-	// fs.writeFileSync("./index.html", html);
-
-	// fs.writeFileSync("./data.txt", html);
 };
 
 
