@@ -152,7 +152,7 @@
 			const refresh = async () => {
 				const response = await fetch(`https://pudding.cool/misc/nba-highlight-hub/data.json?version=${Date.now()}`);
 				const json = await response.json();
-				console.log(json.timestamp);
+				
 				const highlights = json.data.map(({ title, href, datetime, ago }) =>
 					`<div class="highlight">
 						<h2 class="title">${title}</h2>
