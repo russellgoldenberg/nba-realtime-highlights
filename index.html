@@ -66,7 +66,7 @@
 		}
 
 		section {
-			max-width: 100em;
+			max-width: 50em;
 			margin: 0 auto;
 			padding: 1em;
 		}
@@ -89,7 +89,7 @@
 
 		.highlight {
 			width: 100%;
-			border: 2px solid var(--bg);
+			border: 4px solid var(--bg);
 			position: relative;
 		}
 
@@ -114,17 +114,17 @@
 			margin-top: 5em;
 		}
 
-		@media only screen and (min-width: 800px) {
+		/* @media only screen and (min-width: 800px) {
 			.highlight {
 				width: 50%;
 			}
-		}
+		} */
 
-		@media only screen and (min-width: 1200px) {
+		/* @media only screen and (min-width: 1200px) {
 			.highlight {
 				width: 33.333%;
 			}
-		}
+		} */
 	</style>
 </head>
 
@@ -151,9 +151,15 @@
 			let timer = RESET;
 			let prevTimestamp;
 
+			const makeSrc = str => {
+				return str.replace(".com/", ".com/e/");
+			};
+
 			const refresh = async () => {
 				const response = await fetch(`https://pudding.cool/misc/nba-highlight-hub/data.json?version=${Date.now()}`);
 				const json = await response.json();
+
+				// console.log(json);
 				
 				if (json.timestamp !== prevTimestamp) {		
 					prevTimestamp = json.timestamp;		
@@ -162,7 +168,7 @@
 							<h2 class="title">${title}</h2>
 							<p data-datetime="${datetime}" class="ago">${ago}</p>
 							<div style="width:100%;height:0px;position:relative;padding-bottom:56.25%;">
-							<iframe src="${makeSrc(href)}?autoplay=1&nocontrols=0&muted=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
+							<iframe src="${makeSrc(href)}?autoplay=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
 							</div>
 						</div>`
 					).join("");

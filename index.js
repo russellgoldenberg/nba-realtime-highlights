@@ -1,6 +1,7 @@
 const fetch = require("node-fetch");
 const cheerio = require("cheerio");
 const aws = require("aws-sdk");
+const uniqBy = require("lodash.uniqby");
 
 const MAX = 6;
 const s3 = new aws.S3();
@@ -41,8 +42,12 @@ const getAgo = (t) => {
 	const diff = Date.now() - t;
 	const minutes = Math.floor(diff / 60000);
 	if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
-	else if (minutes < (24 * 60)) return `${minutes / 60} hour${minutes / 60 === 1 ? "" : "s"} ago`;
-	return `${minutes / (24 * 60)} day${minutes / (24 * 60) === 1 ? "" : "s"} ago`;
+	else if (minutes < (24 * 60)) {
+		const h = Math.floor(minutes / 60);
+		return `${h} hour${h === 1 ? "" : "s"} ago`;
+	}
+	const d = Math.floor(minutes / (24 * 60));
+	return `${d} day${d === 1 ? "" : "s"} ago`;
 };
 
 const init = async () => {
@@ -71,7 +76,10 @@ const init = async () => {
 	const old = await download();
 	const joined = newData.concat(old.data);
 	joined.sort((a, b) => b.timestamp - a.timestamp);
-	const sliced = joined.slice(0, MAX);
+
+	const unique = uniqBy(joined, "href");
+
+	const sliced = unique.slice(0, MAX);
 	const data = sliced.map(d => ({
 		...d,
 		ago: getAgo(d.timestamp)
