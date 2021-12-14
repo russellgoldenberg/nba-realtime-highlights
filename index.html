@@ -89,7 +89,8 @@
 
 		.highlight {
 			width: 100%;
-			border: 4px solid var(--bg);
+			border: 2px solid var(--bg);
+			margin: 1em auto;
 			position: relative;
 		}
 
@@ -168,7 +169,7 @@
 							<h2 class="title">${title}</h2>
 							<p data-datetime="${datetime}" class="ago">${ago}</p>
 							<div style="width:100%;height:0px;position:relative;padding-bottom:56.25%;">
-							<iframe src="${makeSrc(href)}?autoplay=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
+							<iframe src="${makeSrc(href)}?autoplay=1&muted=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
 							</div>
 						</div>`
 					).join("");
