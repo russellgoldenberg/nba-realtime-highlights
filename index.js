@@ -50,7 +50,7 @@ const getAgo = (t) => {
 	return `${d} day${d === 1 ? "" : "s"} ago`;
 };
 
-const scrapeData = () => {
+const scrapeData = (body) => {
 	const results = [];
 	const $ = cheerio.load(body);
 	$("#siteTable .thing").each((i, el) => {
