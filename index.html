@@ -66,7 +66,7 @@
 		}
 
 		section {
-			max-width: 50em;
+			max-width: 120em;
 			margin: 0 auto;
 			padding: 1em;
 		}
@@ -74,7 +74,7 @@
 		.highlights {
 			display: flex;
 			flex-wrap: wrap;
-			min-height: 320px;
+			min-height: 480px;
 		}
 
 		.highlights:empty::before {
@@ -90,7 +90,7 @@
 		.highlight {
 			width: 100%;
 			border: 2px solid var(--bg);
-			margin: 1em auto;
+			/* margin: 1em auto; */
 			position: relative;
 		}
 
@@ -115,17 +115,17 @@
 			margin-top: 5em;
 		}
 
-		/* @media only screen and (min-width: 800px) {
+		@media only screen and (min-width: 800px) {
 			.highlight {
 				width: 50%;
 			}
-		} */
+		}
 
-		/* @media only screen and (min-width: 1200px) {
+		@media only screen and (min-width: 1200px) {
 			.highlight {
 				width: 33.333%;
 			}
-		} */
+		}
 	</style>
 </head>
 
@@ -160,14 +160,14 @@
 				const response = await fetch(`https://pudding.cool/misc/nba-highlight-hub/data.json?version=${Date.now()}`);
 				const json = await response.json();
 
-				// console.log(json);
+				console.log(json);
 				
 				if (json.timestamp !== prevTimestamp) {		
 					prevTimestamp = json.timestamp;		
-					const highlights = json.data.map(({ title, href, datetime, ago }) =>
+					const highlights = json.data.map(({ title, href, timestamp, ago }) =>
 						`<div class="highlight">
 							<h2 class="title">${title}</h2>
-							<p data-datetime="${datetime}" class="ago">${ago}</p>
+							<p data-timestamp="${timestamp}" class="ago">${ago}</p>
 							<div style="width:100%;height:0px;position:relative;padding-bottom:56.25%;">
 							<iframe src="${makeSrc(href)}?autoplay=1&muted=1" frameborder="0" width="100%" height="100%" allowfullscreen allow="autoplay" style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
 							</div>
