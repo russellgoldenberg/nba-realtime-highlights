@@ -50,11 +50,9 @@ const getAgo = (t) => {
 	return `${d} day${d === 1 ? "" : "s"} ago`;
 };
 
-const init = async () => {
-	const response = await fetch("https://old.reddit.com/r/nba/new");
-	const body = await response.text();
-	const $ = cheerio.load(body);
+const scrapeData = () => {
 	const results = [];
+	const $ = cheerio.load(body);
 	$("#siteTable .thing").each((i, el) => {
 		const a = $(el).find("a.title");
 		const title = $(a).text();
@@ -68,13 +66,26 @@ const init = async () => {
 		results.push(({ title, href, timestamp, comments }));
 	});
 
-	const newData = results
-		.filter(d => d.title.startsWith("[Highlight]") && d.href.includes("streamable.com"));
+	return results.filter(d => d.title.startsWith("[Highlight]") && d.href.includes("streamable.com"));
+};
+
+const init = async () => {
+	const response = await fetch("https://old.reddit.com/r/nba/new");
+	const body = await response.text();
 
 	const timestamp = Date.now();
+	const cur = scrapeData(body);
+	const prev = await download();
 
-	const old = await download();
-	const joined = newData.concat(old.data);
+	const curHrefs = cur.map(d => d.href);
+	// get rid of prev data that is <5m but not in cur data (it probably got booted)
+	const prevPruned = prev.data.filter(d => {
+		const fiveMin = 60000 * 5;
+		if (timestamp - d.timestamp < fiveMin) return curHrefs.includes(d.href);
+		return true;
+	});
+
+	const joined = cur.concat(prevPruned);
 	joined.sort((a, b) => b.timestamp - a.timestamp);
 
 	const unique = uniqBy(joined, "href");
